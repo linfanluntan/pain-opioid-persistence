@@ -1,0 +1,13 @@
+# Core (required)
+numpy>=1.21
+pandas>=1.3
+scikit-learn>=1.0
+
+# Optional: Bayesian threshold optimization
+# scikit-optimize>=0.9
+
+# Optional: AUC-ROC computation
+# pROC equivalent not needed — sklearn handles it
+
+# Optional: better p-values
+scipy>=1.7
