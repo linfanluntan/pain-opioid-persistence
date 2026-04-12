@@ -2,20 +2,36 @@
 # 05_bayesian_threshold.R
 # Pain AUC & Opioid Persistence — Bayesian Optimization for AUC Cutpoints
 # ASTRO 2026 | Mahin, Nkuku, He, Fuller, Moreno, Javed
+# MD Anderson Cancer Center
 # =============================================================================
 #
 # OPTIONAL: More principled threshold selection via Bayesian Optimization
-# with Gaussian Process surrogate. Maximizes cross-validated predictive
-# performance rather than brute-force grid search.
+# with Gaussian Process surrogate [Snoek, Larochelle & Adams, NeurIPS 2012].
 #
-# Advantages over grid search:
-#   - Reduces data-dredging concerns
-#   - Accounts for noise / model stochasticity
-#   - Formalizes threshold uncertainty (posterior distribution)
-#   - Avoids arbitrary percentile spacing
+# MOTIVATION (docs/technical_report.md §7.2):
+#   The grid search in 04_threshold_search.R has been criticized as
+#   "data dredging" that inflates type I error [Lausen & Schumacher, 1992].
+#   Bayesian optimization addresses this by:
+#     - Building a probabilistic surrogate of the objective surface
+#     - Balancing exploration vs. exploitation via acquisition functions
+#     - Formalizing threshold uncertainty (posterior distribution)
+#     - Reducing required evaluations vs. exhaustive grid
 #
-# REQUIRES: install.packages(c("mlrMBO", "DiceKriging", "lhs", "smoof"))
-#           OR: use the simpler rBayesianOptimization package
+# OBJECTIVE FUNCTION:
+#   Maximize cross-validated AUC-ROC (not raw OR magnitude) to prevent
+#   overfitting the threshold to sample noise. The continuous AUC model
+#   remains primary inference [Royston et al., 2006]; this threshold
+#   serves clinical decision-making only.
+#
+# OUTPUT:
+#   Optimal threshold with posterior credible interval, e.g.:
+#     Mean optimal = 51.8%, 95% CI [47.3, 55.6]
+#   This is more defensible than a point estimate from grid search.
+#
+# REQUIRES: install.packages("rBayesianOptimization")
+#           OR uses built-in manual stratified search as fallback
+#
+# See docs/technical_report.md §7 and docs/statistical_notes.md §6
 # =============================================================================
 
 # Using rBayesianOptimization (simpler interface)

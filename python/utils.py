@@ -2,6 +2,29 @@
 utils.py
 Utility functions for Pain AUC computation and variable collapsing.
 ASTRO 2026 | Mahin, Nkuku, He, Fuller, Moreno, Javed
+MD Anderson Cancer Center
+
+KEY FUNCTIONS:
+    compute_pain_auc()     - Trapezoidal rule AUC with normalization
+                             [Rowland & Tozer, 2011; Kahn et al., 2012]
+    impute_pain_scores()   - Linear interpolation for missing weekly PROs
+                             [See docs/technical_report.md §8 for caveats]
+    collapse_smoking()     - Ever vs. Never (prevents sparse cells in FU2)
+    collapse_site()        - Oropharynx vs. Other (prevents n=1 separation)
+    collapse_treatment()   - RT alone / PORT / Def ChemoRT intensity levels
+    collapse_race()        - White vs. Non-White (for FU2 sparse strata)
+    check_sparse_factors() - Identify cells with <5 patients or 0 events
+                             that cause quasi-complete separation
+                             [Albert & Anderson, 1984]
+    build_design_matrix()  - Numeric matrix with dummy-coded categoricals
+
+COLLAPSING RATIONALE (docs/statistical_notes.md §5):
+    FU2 has 47 events → ~4-5 predictors at 10 EPV [Peduzzi et al., 1996].
+    Detailed race (4 levels), site (8-10 levels), and regimen (8 levels)
+    create sparse cells that cause separation. Collapsing eliminates
+    infinite ORs while preserving the primary Pain AUC signal.
+
+See docs/references.md for the complete bibliography.
 """
 
 import numpy as np

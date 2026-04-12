@@ -2,14 +2,30 @@
 # 04_threshold_search.R
 # Pain AUC & Opioid Persistence — Grid Search for Clinical AUC Cutpoints
 # ASTRO 2026 | Mahin, Nkuku, He, Fuller, Moreno, Javed
+# MD Anderson Cancer Center
 # =============================================================================
 #
-# Exploratory risk-stratification analysis:
-#   For each candidate threshold, binarize AUC and fit a multivariable
-#   logistic model to estimate the OR for above-threshold vs. below.
+# EXPLORATORY risk-stratification analysis (not primary inference).
 #
-# NOTE: The primary inference uses continuous AUC (more powerful).
-#       Thresholds are secondary — for clinical decision-making only.
+# For each candidate threshold, binarize AUC and fit a multivariable
+# logistic model to estimate the adjusted OR for above vs. below.
+#
+# The primary inference uses CONTINUOUS AUC (Section 6 of technical report):
+#   - Dichotomizing discards information [Royston et al., Stat Med 2006]
+#   - Continuous models are statistically stronger [Altman & Royston, 2006]
+#   - Thresholds serve clinical decision-making only
+#
+# METHODOLOGICAL CAVEATS:
+#   - Grid search inflates type I error [Lausen & Schumacher, 1992]
+#   - Mitigated by: exploratory framing, bootstrap validation,
+#     optional Bayesian optimization [Snoek et al., NeurIPS 2012]
+#
+# KEY RESULTS (from technical report §7):
+#   FU1: lowest significant AUC ≥ 5% (OR 2.6); strongest 53.2% (OR 7.8)
+#   FU2: lowest significant AUC ≥ 15.8% (OR 4.3); strongest 18.3% (OR 7.0)
+#   Divergence is biologically coherent [Brummett et al., 2017; Sun et al., 2016]
+#
+# See docs/technical_report.md §7 for full discussion
 # =============================================================================
 
 library(logistf)

@@ -1,12 +1,26 @@
 %% demo_firth.m
 %  Demonstration of Firth penalized logistic regression with separation.
 %  ASTRO 2026 | Mahin, Nkuku, He, Fuller, Moreno, Javed
+%  MD Anderson Cancer Center
 %
-%  This script:
+%  This script demonstrates the core statistical issue and solution from
+%  the technical report (docs/technical_report.md Sections 11.1-11.5):
+%
 %    1. Generates simulated data with quasi-complete separation
-%    2. Shows that standard MLE fails (huge coefficients)
-%    3. Shows that Firth produces finite, stable estimates
-%    4. Demonstrates the FU2-like parsimonious model structure
+%       (mirrors Eye & Orbit n=1, ICRT+Surgery n=1 in our FU2 data)
+%    2. Shows that standard MLE fails — huge coefficients, SEs > 2000
+%       [Albert & Anderson, Biometrika 1984]
+%    3. Shows that Firth produces finite, stable, interpretable estimates
+%       [Firth, Biometrika 1993; Heinze & Schemper, Stat Med 2002]
+%    4. Demonstrates the FU2-like parsimonious model structure:
+%       Pain AUC (per 10%) + Smoking (ever/never) + Age (>=60) + TxIntensity
+%       [Peduzzi et al., 1996: ~10 EPV rule → 47 events / 5 params = 9.4 EPV]
+%
+%  KEY POINT: Pain AUC (continuous, broadly distributed) is UNAFFECTED by
+%  separation — it survives penalization because it has no sparse cells.
+%  The instability is confined to rare categorical variables.
+%
+%  See also: python/firth_logistic.py, R/02_firth_primary_models.R
 
 clear; clc;
 fprintf('=== Firth Logistic Regression — Demo ===\n\n');

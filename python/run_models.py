@@ -2,6 +2,25 @@
 run_models.py
 Full modeling pipeline: Data prep → Firth → L2 → Threshold search.
 ASTRO 2026 | Mahin, Nkuku, He, Fuller, Moreno, Javed
+MD Anderson Cancer Center
+
+PIPELINE (mirrors docs/technical_report.md structure):
+    1. Data preparation with variable collapsing (§2, §4)
+    2. Sparse factor check — identify separation risks (§11.2)
+    3. Model B: Firth penalized LR — primary inference (§6, §11.4)
+       Prespecified parsimonious FU2 model: Pain AUC + Smoking + Age + TxIntensity
+    4. L2 sensitivity — directional consistency check (§11.5)
+       [Friedman, Hastie & Tibshirani, J Stat Softw 2010]
+    5. Threshold search — exploratory risk stratification (§7)
+       Grid search with adjusted ORs at each cutpoint
+    6. Clinical interpretation — OR per 10% scaling (§6.3)
+       [Vittinghoff et al., 2012]
+
+MODELING HIERARCHY:
+    1 ✅ Firth penalized LR   [Firth 1993; Heinze & Schemper 2002]
+    2 ✅ Parsimonious model    [Peduzzi et al. 1996; Vittinghoff & McCulloch 2007]
+    3 ⚠️ L2 regularized LR    [Friedman et al. 2010] — sensitivity only
+    4 ❌ Standard MLE          [Albert & Anderson 1984] — not reportable under separation
 
 Usage:
     python run_models.py --data path/to/cohort.csv

@@ -10,7 +10,20 @@ function [beta, cov_mat, info] = firth_logistic(X, y, maxIter, tol)
 %       l*(beta) = l(beta) + 0.5 * log|I(beta)|
 %
 %   This prevents coefficient divergence under separation and corrects
-%   small-sample bias — ideal for sparse clinical datasets.
+%   small-sample bias -- ideal for sparse clinical datasets.
+%
+%   WHEN TO USE:
+%   In our FU2 cohort (N=106, 47 events, 23+ parameters), standard MLE
+%   produces quasi-complete separation with ORs of 47,924 and 7,532,188.
+%   Firth regression guarantees finite estimates without a tuning
+%   hyperparameter. The primary Pain AUC predictor is unaffected by
+%   separation (continuous, broadly distributed, outcome overlap).
+%
+%   HIERARCHY (docs/statistical_notes.md Section 4.5):
+%     1. Firth penalized LR     -- primary inference (this function)
+%     2. Parsimonious model     -- collapsed categories
+%     3. L2 regularized LR      -- sensitivity only
+%     4. Standard MLE           -- not reportable under separation
 %
 %   Inputs:
 %       X       - (n x p) design matrix. Include intercept column if desired.
@@ -21,15 +34,17 @@ function [beta, cov_mat, info] = firth_logistic(X, y, maxIter, tol)
 %   Outputs:
 %       beta    - (p x 1) Firth-penalized coefficient estimates.
 %       cov_mat - (p x p) approximate covariance (inverse Fisher info).
-%       info    - struct with fields:
-%                   .iterations  - number of iterations used
-%                   .converged   - logical, whether convergence was achieved
-%                   .loglik      - standard log-likelihood at solution
-%                   .pen_loglik  - penalized log-likelihood at solution
+%       info    - struct: .iterations, .converged, .loglik, .pen_loglik
 %
-%   Reference:
-%       Firth D. Bias reduction of maximum likelihood estimates.
-%       Biometrika. 1993;80(1):27-38.
+%   References:
+%       Firth D. Biometrika. 1993;80(1):27-38.
+%       Albert A, Anderson JA. Biometrika. 1984;71(1):1-10.
+%       Heinze G, Schemper M. Stat Med. 2002;21(16):2409-2419.
+%       King G, Zeng L. Polit Anal. 2001;9(2):137-163.
+%       See docs/references.md for complete bibliography.
+%
+%   R equivalent: logistf::logistf() (Heinze et al., 2024)
+%   Python equivalent: python/firth_logistic.py
 %
 %   ASTRO 2026 | Mahin, Nkuku, He, Fuller, Moreno, Javed
 

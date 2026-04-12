@@ -2,15 +2,21 @@
 # 03_l2_sensitivity.R
 # Pain AUC & Opioid Persistence — L2 Regularized Logistic Regression
 # ASTRO 2026 | Mahin, Nkuku, He, Fuller, Moreno, Javed
+# MD Anderson Cancer Center
 # =============================================================================
 #
 # L2 (ridge) regularized logistic regression as SENSITIVITY analysis.
+# Maximizes: l(β) − λΣβ²  [Friedman, Hastie & Tibshirani, J Stat Softw 2010]
 #
 # Purpose: Confirm that the primary Pain AUC effect is directionally
 # consistent under an alternative shrinkage approach.
 #
-# This is NOT the primary inference model. Firth is primary.
-# L2 is used here for robustness checking only.
+# This is NOT the primary inference model. Firth is primary because:
+#   - L2 depends on tuning hyperparameter λ (chosen by CV)
+#   - L2 is designed for prediction, not classical hypothesis testing
+#   - Wald p-values under penalty have uncertain theoretical grounding
+#   - Effect sizes depend on penalty strength
+#   [See docs/statistical_notes.md §4.3 for detailed comparison]
 #
 # REQUIRES: install.packages("glmnet")
 # =============================================================================

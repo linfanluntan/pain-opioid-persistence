@@ -2,19 +2,42 @@
 # 02_firth_primary_models.R
 # Pain AUC & Opioid Persistence — Firth Penalized Logistic Regression
 # ASTRO 2026 | Mahin, Nkuku, He, Fuller, Moreno, Javed
+# MD Anderson Cancer Center
 # =============================================================================
 #
 # Primary inference models using Firth bias-reduced penalized LR.
 #
-# Model A (FU1): Full multivariable model — larger cohort supports more params
-# Model B (FU2): Prespecified parsimonious model — ~4-6 effective parameters
-# Model B2 (FU2 sensitivity): Model B + one behavioral covariate
+# Model A (FU1): Full multivariable model
+#   - 287 events, 26 parameters, EPV ≈ 11 [Peduzzi et al., 1996]
+#   - Covariates: Pain AUC, smoking, age, gender, race, ethnicity,
+#     primary site, treatment regimen, benzodiazepine use
 #
-# Firth regression adds a Jeffreys-prior penalty:
-#   l*(β) = l(β) + ½ log|I(β)|
-# Guarantees finite estimates under separation, corrects small-sample bias.
+# Model B (FU2): Prespecified parsimonious model
+#   - 47 events, ~5 parameters, EPV ≈ 9
+#   - Pain AUC (continuous per 10%), Smoking (ever/never),
+#     Age (≥60/<60), Treatment intensity (2-3 levels)
+#   - Race/site/detailed regimen EXCLUDED due to sparse strata
 #
-# REQUIRES: install.packages("logistf")
+# Model B2 (FU2 sensitivity): Model B + benzo use or psychiatric hx
+#
+# WHY FIRTH:
+#   FU2 produces quasi-complete separation under standard MLE — ORs of
+#   47,924 and 7,532,188, SEs > 2,000, optimizer failures.
+#   Firth adds a Jeffreys invariant prior [Firth, Biometrika 1993]:
+#     l*(β) = l(β) + ½ log|I(β)|
+#   Benefits: finite estimates under separation, O(n⁻¹) bias reduction,
+#   valid likelihood-based CIs [Heinze & Schemper, Stat Med 2002].
+#   No tuning hyperparameter (unlike L2/ridge).
+#   Standard for rare-event clinical research [King & Zeng, 2001].
+#
+# RESULT SCALING:
+#   Pain AUC modeled per 10% increase for clinical interpretability.
+#   OR per 1% ≈ 1.05 → OR per 10% = (1.05)^10 ≈ 1.63
+#   Same model, same p-value [Vittinghoff et al., 2012].
+#
+# REQUIRES: install.packages("logistf")  [Heinze et al., 2024]
+#
+# See docs/technical_report.md §6 and §11 for full rationale
 # =============================================================================
 
 library(logistf)

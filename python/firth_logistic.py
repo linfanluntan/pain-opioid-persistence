@@ -7,12 +7,36 @@ under separation and correct small-sample bias:
 
     l*(β) = l(β) + ½ log|I(β)|
 
-where I(β) is the Fisher information matrix.
+where I(β) is the Fisher information matrix. This is equivalent to adding a
+Jeffreys invariant prior to the likelihood, producing finite estimates even
+under complete or quasi-complete separation.
 
-This is equivalent to adding a Jeffreys invariant prior to the likelihood.
+THEORETICAL BACKGROUND (see docs/technical_report.md §11 and docs/statistical_notes.md §3-4):
+    - Separation occurs when predictor values perfectly predict the outcome,
+      causing the MLE to diverge to ±∞ (Albert & Anderson, Biometrika 1984)
+    - Firth's penalty guarantees finite estimates and reduces O(n⁻¹) bias
+      (Firth, Biometrika 1993; Heinze & Schemper, Stat Med 2002)
+    - Unlike L2/ridge regularization, Firth requires no tuning hyperparameter
+      and preserves likelihood-based inference (valid CIs, profile LR tests)
+    - Standard for rare-event logistic regression in clinical research
+      (King & Zeng, Polit Anal 2001)
 
-Reference:
-    Firth D. Bias reduction of maximum likelihood estimates. Biometrika. 1993;80(1):27-38.
+WHY THIS IMPLEMENTATION EXISTS:
+    In our FU2 cohort (N=106, 47 events, 23+ parameters), standard MLE
+    produces ORs of 47,924 and 7,532,188 with SEs > 2,000. Firth regression
+    resolves this by adding curvature to the likelihood surface via the
+    Jeffreys prior. The primary Pain AUC predictor (continuous, broadly
+    distributed) is unaffected by separation — it survives penalization
+    because it has no sparse cells and overlaps between outcome groups.
+
+R EQUIVALENT: logistf::logistf() (Heinze, Ploner & Jiricka, 2024)
+
+References:
+    Albert A, Anderson JA. Biometrika. 1984;71(1):1-10.
+    Firth D. Biometrika. 1993;80(1):27-38.
+    Heinze G, Schemper M. Stat Med. 2002;21(16):2409-2419.
+    King G, Zeng L. Polit Anal. 2001;9(2):137-163.
+    See docs/references.md for the complete bibliography.
 
 Usage:
     from firth_logistic import FirthLogisticRegression

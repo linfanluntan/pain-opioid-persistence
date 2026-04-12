@@ -2,17 +2,35 @@
 # 01_data_preparation.R
 # Pain AUC & Opioid Persistence — Data Preparation
 # ASTRO 2026 | Mahin, Nkuku, He, Fuller, Moreno, Javed
+# MD Anderson Cancer Center
 # =============================================================================
 #
 # This script:
-#   1. Loads the analytic cohort (MOSAIC-eligible HNC patients)
-#   2. Defines FU1 and FU2 cohorts based on time windows
+#   1. Loads the analytic cohort (MOSAIC-eligible HNC patients, N=1,118)
+#   2. Defines FU1 (6-15 wk, N≈397) and FU2 (21-30 wk, N≈106) cohorts
 #   3. Computes normalized Pain AUC (%) via trapezoidal rule
-#   4. Collapses sparse categories for stable modeling
-#   5. Defines the opioid persistence outcome
+#      [Rowland & Tozer, 2011; Kahn et al., 2012]
+#   4. Collapses sparse categories to prevent quasi-complete separation
+#      [Albert & Anderson, 1984; Heinze & Schemper, 2002]
+#   5. Defines opioid persistence outcome (active Rx within ±7 days of FU)
+#      NB: This is opioid persistence, NOT DSM-5 OUD [APA, 2013]
+#
+# Temporal windows (days post-RT end date):
+#   FU1: 42-105 days (6-15 weeks) — subacute phase
+#   FU2: 150-210 days (5-7 months) — chronic phase
+#   [Glare et al., Lancet 2014; NCI-CTCAE v5.0, 2017]
+#
+# Category collapsing rationale (for FU2 with 47 events):
+#   ~10 EPV rule → max 4-5 predictors [Peduzzi et al., 1996]
+#   Smoking: ever vs never (avoids sparse current/former split)
+#   Site: oropharynx vs other (avoids n=1 cells)
+#   Treatment: 2-3 intensity levels (RT alone / PORT / Def ChemoRT)
+#   Race: White vs Non-White OR omit from FU2 (n=1 cells)
 #
 # INPUT:  Raw analytic dataset (one row per patient)
 # OUTPUT: fu1_analytic.rds, fu2_analytic.rds — ready for modeling
+#
+# See docs/technical_report.md §2-5 and docs/references.md for full citations
 # =============================================================================
 
 library(dplyr)
